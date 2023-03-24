@@ -8,8 +8,8 @@ version: '3.7'
 
 volumes:
   db_storage:
-  keycloack_storage:
-  keycloack_db_storage:
+  keycloak_storage:
+  keycloak_db_storage:
   minio_storage: 
     
 networks:
@@ -32,7 +32,7 @@ services:
     environment:
       REACT_APP_BACKEND_URL: back
       REACT_APP_BACKEND_PORT: 3000
-      REACT_APP_KEYCLOAK_URL: keycloack
+      REACT_APP_KEYCLOAK_URL: keycloak
       REACT_APP_KEYCLOAK_PORT: ${KEYCLOAK_PORT}
       REACT_APP_KEYCLOAK_REALM: ${KEYCLOAK_REALM}
       REACT_APP_KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
@@ -40,12 +40,12 @@ services:
       REACT_APP_MINIO_PORT: ${MINIO_PORT}
     networks:
       - back
-      - keycloack
+      - keycloak
       - minio
     depends_on:
       - back
       - db
-      - keycloack
+      - keycloak
       - minio
   
   back:
@@ -62,7 +62,7 @@ services:
       DATABASE_NAME: ${DB_NAME}
       DATABASE_USER: ${DB_USER}
       DATABASE_PASSWORD: ${DB_PASSWORD}
-      KEYCLOAK_ENDPOINT: keycloack
+      KEYCLOAK_ENDPOINT: keycloak
       KEYCLOAK_PORT: ${KEYCLOAK_PORT}
       KEYCLOAK_REALM: ${KEYCLOAK_REALM}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
@@ -74,11 +74,11 @@ services:
       MINIO_PORT_ACCESS: ${MINIO_PORT_ACCESS}
     networks:
       - db
-      - keycloack
+      - keycloak
       - minio
     depends_on:
       - db
-      - keycloack
+      - keycloak
       - minio
   
   # storagebase (postgres)
@@ -105,21 +105,21 @@ services:
       - ${KEYCLOAK_PORT}:8080
     environment:
       DB_VENDOR: POSTGRES
-      DB_ADDR: keycloack_db
+      DB_ADDR: keycloak_db
       DB_DATABASE: ${KEYCLOAK_DB_NAME}
       DB_USER: ${KEYCLOAK_DB_USER}
       DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
       KEYCLOAK_USER: ${KEYCLOAK_USER}
       KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
     volumes:
-      - keycloack_storage:/storage
+      - keycloak_storage:/storage
     depends_on:
-      - keycloack_db
+      - keycloak_db
     networks:
       - keycloak
       - pgadmin
     
-  keycloack_db:
+  keycloak_db:
     image: postgres:15.1-alpine
     container_name: ybook-auth-db
     ports:
@@ -129,7 +129,7 @@ services:
       POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
       POSTGRES_DB: ${KEYCLOAK_DB_NAME}
     volumes:
-      - keycloack_db_storage:/tmp
+      - keycloak_db_storage:/tmp
     restart: always
     networks:
       - keycloak
@@ -159,7 +159,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
     depends_on:
       - db
-      - keycloack_db
+      - keycloak_db
     networks:
       - pgadmin
 
