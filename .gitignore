@@ -1,0 +1,24 @@
+#.gitignore
+
+# ignore all in back exept the Dockerfile
+
+back/*
+!back/Dockerfile
+
+# ignore all in front exept the Dockerfile
+
+front/*
+!front/Dockerfile
+
+# ignore env files  everywhere
+**/.env
+**/.env.local
+
+# ignore vscode files
+.vscode/
+# ignore idea files
+.idea/
+
+
+# ignore nodes modules everywhere
+**/node_modules/

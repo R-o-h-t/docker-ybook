@@ -1,0 +1,166 @@
+# Deploy the FRONT and BACK from the private registry (Prod)
+## STOR is minio
+## AUTH is keycloak
+## all db are postgres
+## pgadmin is for db management
+
+version: '3.7'
+
+volumes:
+  db_storage:
+  keycloack_storage:
+  keycloack_db_storage:
+  minio_storage: 
+    
+networks:
+  back: 
+  front:
+  db:
+  keycloak:
+  minio:
+  pgadmin:
+
+services:
+  front: 
+    image: registry.gitlab.com/username/front:latest
+    container_name: ybook-front
+    build: 
+      context: ./front
+      dockerfile: Dockerfile
+    ports:
+      - ${YBOOK_FRONTEND_PORT}:3000
+    environment:
+      REACT_APP_BACKEND_URL: back
+      REACT_APP_BACKEND_PORT: 3000
+      REACT_APP_KEYCLOAK_URL: keycloack
+      REACT_APP_KEYCLOAK_PORT: ${KEYCLOAK_PORT}
+      REACT_APP_KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+      REACT_APP_KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      REACT_APP_MINIO_URL: minio
+      REACT_APP_MINIO_PORT: ${MINIO_PORT}
+    networks:
+      - back
+      - keycloack
+      - minio
+    depends_on:
+      - back
+      - db
+      - keycloack
+      - minio
+  
+  back:
+    image: registry.gitlab.com/username/back:latest
+    container_name: ybook-back
+    build: 
+      context: ./back
+      dockerfile: Dockerfile
+    ports:
+      - ${YBOOK_BACKEND_PORT}:3000
+    environment:
+      DATABASE_URL: db
+      DATABASE_PORT: ${DB_PORT}
+      DATABASE_NAME: ${DB_NAME}
+      DATABASE_USER: ${DB_USER}
+      DATABASE_PASSWORD: ${DB_PASSWORD}
+      KEYCLOAK_ENDPOINT: keycloack
+      KEYCLOAK_PORT: ${KEYCLOAK_PORT}
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: ${MINIO_PORT}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_PORT_ACCESS: ${MINIO_PORT_ACCESS}
+    networks:
+      - db
+      - keycloack
+      - minio
+    depends_on:
+      - db
+      - keycloack
+      - minio
+  
+  # storagebase (postgres)
+  db:
+    image: postgres:15.1-alpine
+    container_name: ybook-db
+    ports:
+      - ${DB_PORT}:5432
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - db_storage:/storage
+    restart: always
+    networks:
+      - db
+      - pgadmin
+  
+  keycloak:
+    image: jboss/keycloak:15.0.2
+    container_name: ybook-auth
+    ports:
+      - ${KEYCLOAK_PORT}:8080
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: keycloack_db
+      DB_DATABASE: ${KEYCLOAK_DB_NAME}
+      DB_USER: ${KEYCLOAK_DB_USER}
+      DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+      KEYCLOAK_USER: ${KEYCLOAK_USER}
+      KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
+    volumes:
+      - keycloack_storage:/storage
+    depends_on:
+      - keycloack_db
+    networks:
+      - keycloak
+      - pgadmin
+    
+  keycloack_db:
+    image: postgres:15.1-alpine
+    container_name: ybook-auth-db
+    ports:
+      - ${KEYCLOAK_DB_PORT}:5432      
+    environment:
+      POSTGRES_USER: ${KEYCLOAK_DB_USER}
+      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+      POSTGRES_DB: ${KEYCLOAK_DB_NAME}
+    volumes:
+      - keycloack_db_storage:/tmp
+    restart: always
+    networks:
+      - keycloak
+      - pgadmin
+    
+  minio:
+    image: minio/minio:RELEASE.2021-03-31T00-50-56Z
+    container_name: ybook-minio
+    ports:
+      - ${MINIO_PORT}:9000
+    environment:
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+    volumes:
+      - minio_storage:/storage
+    restart: always
+    networks:
+      - minio
+  
+  # pgadmin
+  pgadmin:
+    image: dpage/pgadmin4:5.2
+    ports:
+      - ${PGADMIN_PORT}:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_USER}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    depends_on:
+      - db
+      - keycloack_db
+    networks:
+      - pgadmin
+
+
