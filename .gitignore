@@ -11,7 +11,7 @@
 # !front/Dockerfile
 
 # ignore env files  everywhere
-**/.env
+# **/.env
 **/.env.local
 
 # ignore vscode files
