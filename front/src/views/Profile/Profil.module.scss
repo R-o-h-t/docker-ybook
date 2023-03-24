@@ -1,0 +1,22 @@
+.banner{
+    background-image: url("/../public/assets/images/banner.jpg");
+    filter: grayscale(100%);
+    background-size: cover;
+    background-position: center;
+    height: 150px;
+    position: relative;
+}
+
+
+.container{
+    width: clamp(300px, 85%, 95%);
+    margin: 0 auto 7rem;
+}
+
+
+.postContainer{
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    transition: 0.3s ease-in-out;
+}

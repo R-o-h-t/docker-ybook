@@ -1,0 +1,1 @@
+export type GetSetter<T> = { get: T; set: React.Dispatch<React.SetStateAction<T>> };

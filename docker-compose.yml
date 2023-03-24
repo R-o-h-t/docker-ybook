@@ -22,7 +22,7 @@ networks:
 
 services:
   front: 
-    image: registry.gitlab.com/username/front:latest
+    image: ghcr.io/r-o-h-t/ybookfront:latest
     container_name: ybook-front
     build: 
       context: ./front
@@ -49,7 +49,7 @@ services:
       - minio
   
   back:
-    image: registry.gitlab.com/username/back:latest
+    image: ghcr.io/r-o-h-t/ybookback:latest
     container_name: ybook-back
     build: 
       context: ./back
@@ -57,11 +57,7 @@ services:
     ports:
       - ${YBOOK_BACKEND_PORT}:3000
     environment:
-      DATABASE_URL: db
-      DATABASE_PORT: ${DB_PORT}
-      DATABASE_NAME: ${DB_NAME}
-      DATABASE_USER: ${DB_USER}
-      DATABASE_PASSWORD: ${DB_PASSWORD}
+      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
       KEYCLOAK_ENDPOINT: keycloak
       KEYCLOAK_PORT: ${KEYCLOAK_PORT}
       KEYCLOAK_REALM: ${KEYCLOAK_REALM}
@@ -71,7 +67,6 @@ services:
       MINIO_PORT: ${MINIO_PORT}
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
-      MINIO_PORT_ACCESS: ${MINIO_PORT_ACCESS}
     networks:
       - db
       - keycloak

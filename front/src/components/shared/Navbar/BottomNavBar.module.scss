@@ -1,0 +1,14 @@
+.navbar {
+    height: 4.5rem ;
+    background-color: rgba($color: #d9d9d9, $alpha: 0.3);
+    backdrop-filter: blur(10px);
+    border-top: 0.5px solid #a9a9a9;
+    ;
+    position: fixed;
+    bottom: 0;
+    width: 100vw;
+}
+
+.addbutton{
+    background-color: black;
+}

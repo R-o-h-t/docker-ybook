@@ -2,13 +2,13 @@
 
 # ignore all in back exept the Dockerfile
 
-back/*
-!back/Dockerfile
+# back/*
+# !back/Dockerfile
 
 # ignore all in front exept the Dockerfile
 
-front/*
-!front/Dockerfile
+# front/*
+# !front/Dockerfile
 
 # ignore env files  everywhere
 **/.env

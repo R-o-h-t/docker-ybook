@@ -1,0 +1,12 @@
+.container{
+    width: clamp(300px, 85%, 95%);
+    margin: 0 auto;
+}
+
+
+.postContainer{
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    margin: 0 auto 7rem;
+}
