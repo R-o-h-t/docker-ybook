@@ -8,17 +8,9 @@
 ## express server is listening on port 3000
 
 # Build the app
-
-# Build the app
-
-
-
 FROM node:19-alpine as builder
 
 WORKDIR /usr/src/app
-
-# Set environment variables
-ENV NODE_ENV="production"
 
 # Install dependencies
 COPY --chown=node:node package*.json ./

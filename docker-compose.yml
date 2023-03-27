@@ -28,7 +28,7 @@ services:
       context: ./front
       dockerfile: Dockerfile
     ports:
-      - ${YBOOK_FRONTEND_PORT}:3000
+      - ${YBOOK_FRONTEND_PORT}:80
     environment:
       REACT_APP_BACKEND_URL: back
       REACT_APP_BACKEND_PORT: 3000
@@ -131,7 +131,7 @@ services:
       - pgadmin
     
   minio:
-    image: minio/minio:RELEASE.2021-03-31T00-50-56Z
+    image: minio/minio
     container_name: ybook-minio
     ports:
       - ${MINIO_PORT}:9000
@@ -141,6 +141,7 @@ services:
     volumes:
       - minio_storage:/storage
     restart: always
+    command: server --console-address ":9001" /data
     networks:
       - minio
   

@@ -2,9 +2,7 @@
 
 FROM node:19-alpine AS builder
 
-WORKDIR /usr/src/app
-
-RUN npm install -g react-scripts
+WORKDIR /app
 
 # Build the app
 COPY --chown=node:node package*.json ./
@@ -17,8 +15,12 @@ RUN npm run build
 # Run the app for production
 FROM nginx:alpine AS runner
 
+WORKDIR /usr/share/nginx/html
+
+RUN rm -rf ./*
+
 # Copy build files
-COPY --from=builder /usr/src/app/build /usr/share/nginx/html
+COPY --from=builder /app/build .
 
 # Expose port
 EXPOSE 80
