@@ -20,11 +20,11 @@ Database : Postgres (+ pgAdmin)
 
 ### Front :
 
-- [DockerHub]() (private repo)
+- [DockerHub](https://hub.docker.com/repository/docker/judananas/ybookfront/general)
 
 ### Back :
 
-- [DockerHub]() (private repo)
+- [DockerHub](https://hub.docker.com/repository/docker/judananas/ybookback/general)
 
 ### Authentication :
 

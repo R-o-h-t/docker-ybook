@@ -4,27 +4,26 @@
 ## all db are postgres
 ## pgadmin is for db management
 
-version: '3.7'
+version: "3.7"
 
 volumes:
   db_storage:
   keycloak_storage:
   keycloak_db_storage:
-  minio_storage: 
-    
+  minio_storage:
+
 networks:
-  back: 
-  front:
+  back:
   db:
   keycloak:
   minio:
   pgadmin:
 
 services:
-  front: 
-    image: ghcr.io/r-o-h-t/ybookfront:latest
+  front:
+    image: judananas/ybookfront:latest
     container_name: ybook-front
-    build: 
+    build:
       context: ./front
       dockerfile: Dockerfile
     ports:
@@ -47,11 +46,11 @@ services:
       - db
       - keycloak
       - minio
-  
+
   back:
-    image: ghcr.io/r-o-h-t/ybookback:latest
+    image: judananas/ybookback:latest
     container_name: ybook-back
-    build: 
+    build:
       context: ./back
       dockerfile: Dockerfile
     ports:
@@ -71,11 +70,12 @@ services:
       - db
       - keycloak
       - minio
+      - back
     depends_on:
       - db
       - keycloak
       - minio
-  
+
   # storagebase (postgres)
   db:
     image: postgres:15.1-alpine
@@ -92,7 +92,7 @@ services:
     networks:
       - db
       - pgadmin
-  
+
   keycloak:
     image: jboss/keycloak:15.0.2
     container_name: ybook-auth
@@ -112,13 +112,12 @@ services:
       - keycloak_db
     networks:
       - keycloak
-      - pgadmin
-    
+
   keycloak_db:
     image: postgres:15.1-alpine
     container_name: ybook-auth-db
     ports:
-      - ${KEYCLOAK_DB_PORT}:5432      
+      - ${KEYCLOAK_DB_PORT}:5432
     environment:
       POSTGRES_USER: ${KEYCLOAK_DB_USER}
       POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
@@ -129,12 +128,13 @@ services:
     networks:
       - keycloak
       - pgadmin
-    
+
   minio:
     image: minio/minio
     container_name: ybook-minio
     ports:
       - ${MINIO_PORT}:9000
+      - ${MINIO_PORT_ACCESS}:9001
     environment:
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
@@ -144,7 +144,7 @@ services:
     command: server --console-address ":9001" /data
     networks:
       - minio
-  
+
   # pgadmin
   pgadmin:
     image: dpage/pgadmin4:5.2
@@ -158,5 +158,3 @@ services:
       - keycloak_db
     networks:
       - pgadmin
-
-
